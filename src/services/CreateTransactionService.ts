@@ -1,5 +1,5 @@
-// import AppError from '../errors/AppError';
 import { getCustomRepository, getRepository } from 'typeorm';
+import AppError from '../errors/AppError';
 
 import Transaction from '../models/Transaction';
 import TransactionsRepository from '../repositories/TransactionsRepository';
@@ -25,7 +25,7 @@ class CreateTransactionService {
     // Check the type of the transaction and if it is less than the total balance
     if (type === 'outcome') {
       if ((await transactionsRepository.getBalance()).total - value < 0) {
-        throw new Error(
+        throw new AppError(
           'Outcome transactions must be less than the total balance',
         );
       }
@@ -40,7 +40,7 @@ class CreateTransactionService {
         title,
         value,
         type,
-        category_id: checkCategory.id,
+        category: checkCategory,
       });
       await transactionsRepository.save(transaction);
 
@@ -57,7 +57,7 @@ class CreateTransactionService {
       title,
       value,
       type,
-      category_id: createdCategory.id,
+      category: createdCategory,
     });
 
     // Create the transaction in the TransactionsRepository
