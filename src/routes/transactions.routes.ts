@@ -3,13 +3,12 @@ import { getCustomRepository } from 'typeorm';
 
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import CreateTransactionService from '../services/CreateTransactionService';
-// import DeleteTransactionService from '../services/DeleteTransactionService';
+import DeleteTransactionService from '../services/DeleteTransactionService';
 // import ImportTransactionsService from '../services/ImportTransactionsService';
 
 const transactionsRouter = Router();
 
 transactionsRouter.get('/', async (request, response) => {
-  // TODO
   try {
     const transactionsRepository = getCustomRepository(TransactionsRepository);
     const transactions = await transactionsRepository.find();
@@ -21,7 +20,6 @@ transactionsRouter.get('/', async (request, response) => {
 });
 
 transactionsRouter.post('/', async (request, response) => {
-  // TODO
   try {
     const { title, value, type, category } = request.body;
 
@@ -40,21 +38,11 @@ transactionsRouter.post('/', async (request, response) => {
 });
 
 transactionsRouter.delete('/:id', async (request, response) => {
-  // TODO
   try {
     const { id } = request.params;
-    const transactionsRepository = getCustomRepository(TransactionsRepository);
-    const transactionExists = await transactionsRepository.findOne({
-      where: {
-        id,
-      },
-    });
 
-    if (!transactionExists) {
-      return response.status(400).json({ error: 'Transaction not found' });
-    }
-
-    transactionsRepository.delete(id);
+    const transactionDeleteService = new DeleteTransactionService();
+    await transactionDeleteService.execute({ id });
 
     return response.status(204).send();
   } catch (err) {
